@@ -1,13 +1,33 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+type RequestData struct {
+	Id       string `json:"id"`
+	Question string `json:"question"`
+}
 
 func main() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
+	router := gin.Default()
+
+	router.POST("/message", func(c *gin.Context) {
+		var data RequestData
+		err := c.BindJSON(&data)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Process data
+
+		// Save to database
+
+		c.JSON(http.StatusCreated, data)
 	})
-	r.Run() // 监听并在 0.0.0.0:8080 上启动服务
+
+	router.Run(":8080")
 }
