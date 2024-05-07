@@ -5,7 +5,7 @@ type QuestionAnswer struct {
 	Answer   string `json:"answer"`
 }
 
-func getQuestionAnswers(paramType string) []QuestionAnswer {
+func GetQuestionAnswer(paramType string) []QuestionAnswer {
 	questionAnswerList := map[string][]QuestionAnswer{
 		"sales": {
 			{Question: "Plan A", Answer: "Plan A is ..."},
