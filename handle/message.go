@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/HooEP01/chat-bot/types"
@@ -20,6 +21,11 @@ type RequestData struct {
 	Question string `json:"question"`
 }
 
+type ResultData struct {
+	Data string `json:"data"`
+	Err  error  `json:"error,omitempty"`
+}
+
 func (h MessageHandler) HandleNewMessage(c *gin.Context) {
 	var data RequestData
 	err := c.BindJSON(&data)
@@ -33,10 +39,8 @@ func (h MessageHandler) HandleNewMessage(c *gin.Context) {
 
 	// Notify admin support
 	if isNotifyNeeded {
-		notifyAdminSupport(data.Id)
-
-		// Or chatgpt api
-		respond, err = sendChatGPTRequest(data.Question)
+		result := advanceMessage(c, data)
+		fmt.Printf(result)
 	}
 
 	// Save to database
@@ -79,8 +83,37 @@ func (h MessageHandler) HandleMessageType(c *gin.Context) {
 	c.JSON(http.StatusCreated, respondData)
 }
 
-func notifyAdminSupport(id string) {
+func advanceMessage(c *gin.Context, data RequestData) string {
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Millisecond*100)
+	defer cancel()
+
+	respch := make(chan ResultData, 2)
+
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+
+	go notifyAdminSupport(data.Id, respch, wg)
+	go sendChatGPTRequest(data.Question, respch, wg)
+
+	wg.Wait()
+
+	close(respch)
+
+	for {
+		select {
+		case <-ctx.Done():
+			return "time out"
+		case <-respch:
+			return "response channel"
+		}
+	}
+}
+
+func notifyAdminSupport(id string, respch chan ResultData, wg *sync.WaitGroup) {
 	// tell admin about it
+	time.Sleep(time.Millisecond * 1000)
+	respch <- ResultData{Data: "Complete", Err: nil}
+	wg.Done()
 }
 
 func respondToQuestion(question string) (string, bool) {
@@ -99,7 +132,7 @@ func respondToQuestion(question string) (string, bool) {
 	return "Please wait for a minutes, a customer service representation will help you for your question.", true
 }
 
-func sendChatGPTRequest(question string) (string, error) {
+func sendChatGPTRequest(question string, respch chan ResultData, wg *sync.WaitGroup) {
 	apiKey := os.Getenv("CHATGPT_API_KEY")
 	if apiKey != "" {
 		client := openai.NewClient(apiKey)
@@ -117,11 +150,16 @@ func sendChatGPTRequest(question string) (string, error) {
 		)
 
 		if err != nil {
-			return "error", fmt.Errorf("error")
+			respch <- ResultData{Data: "error", Err: fmt.Errorf("error")}
+			wg.Done()
+			return
 		}
 
-		return resp.Choices[0].Message.Content, nil
+		respch <- ResultData{Data: resp.Choices[0].Message.Content, Err: nil}
+		wg.Done()
+		return
 	}
 
-	return "Api key not found", fmt.Errorf("error")
+	respch <- ResultData{Data: "Api key not found", Err: fmt.Errorf("error")}
+	wg.Done()
 }
