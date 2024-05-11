@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/HooEP01/chat-bot/db"
 	"github.com/HooEP01/chat-bot/handle"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -21,6 +22,8 @@ func main() {
 	if err != nil {
 		panic("(E000) Failed to get env file.")
 	}
+
+	db.StartDB()
 
 	router := gin.Default()
 
