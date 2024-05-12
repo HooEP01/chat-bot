@@ -31,7 +31,6 @@ func (h MessageHandler) HandleNewMessage(c *gin.Context) {
 	err := c.BindJSON(&data)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
 	}
 
 	// Process data
