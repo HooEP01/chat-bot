@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h MessageHandler) HandleInsertFaq(c *gin.Context) {}
-func (h MessageHandler) HandleFaqs(c *gin.Context) {
+func HandleInsertFaq(c *gin.Context) {}
+func HandleFaqs(c *gin.Context) {
 	paramType := c.Query("type")
 
 	// Or better get from database
@@ -23,6 +23,6 @@ func (h MessageHandler) HandleFaqs(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, respondData)
 }
-func (h MessageHandler) HandleFaq(c *gin.Context)       {}
-func (h MessageHandler) HandleUpdateFaq(c *gin.Context) {}
-func (h MessageHandler) HandleDeleteFaq(c *gin.Context) {}
+func HandleFaq(c *gin.Context)       {}
+func HandleUpdateFaq(c *gin.Context) {}
+func HandleDeleteFaq(c *gin.Context) {}

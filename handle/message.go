@@ -14,8 +14,6 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
-type MessageHandler struct{}
-
 type RequestData struct {
 	Id       string `json:"id"`
 	Question string `json:"question"`
@@ -26,7 +24,7 @@ type ResultData struct {
 	Err  error  `json:"error,omitempty"`
 }
 
-func (h MessageHandler) HandleNewMessage(c *gin.Context) {
+func HandleNewMessage(c *gin.Context) {
 	var data RequestData
 	err := c.BindJSON(&data)
 	if err != nil {
@@ -55,7 +53,7 @@ func (h MessageHandler) HandleNewMessage(c *gin.Context) {
 	c.JSON(http.StatusCreated, respondData)
 }
 
-func (h MessageHandler) HandleGeneralMessage(c *gin.Context) {
+func HandleGeneralMessage(c *gin.Context) {
 	paramType := c.Query("type")
 
 	// Or better get from database
@@ -70,7 +68,7 @@ func (h MessageHandler) HandleGeneralMessage(c *gin.Context) {
 	c.JSON(http.StatusCreated, respondData)
 }
 
-func (h MessageHandler) HandleMessageType(c *gin.Context) {
+func HandleMessageType(c *gin.Context) {
 	messageType := [4]string{"sales", "partner", "support", ""}
 
 	// Generate respondData
