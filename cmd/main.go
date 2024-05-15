@@ -30,31 +30,31 @@ func main() {
 	router := gin.Default()
 
 	// set up templ
+	router.Static("public/", "./public")
 	router.LoadHTMLGlob("views/home/*")
 	ginHtmlRenderer := router.HTMLRender
 	router.HTMLRender = &gintemplrenderer.HTMLTemplRenderer{FallbackHtmlRenderer: ginHtmlRenderer}
 
-	messageHandler := handle.MessageHandler{}
-
 	// api
-	router.POST("/message", messageHandler.HandleNewMessage)
-	router.GET("/message/type", messageHandler.HandleMessageType)
-	router.GET("/message", messageHandler.HandleGeneralMessage)
+	router.POST("/message", handle.HandleNewMessage)
+	router.GET("/message/type", handle.HandleMessageType)
+	router.GET("/message", handle.HandleGeneralMessage)
 
 	// view
-	router.GET("/home", messageHandler.HandleHome)
+	// router.GET("/login", messageHandler.HandleLogin)
+	router.GET("/home", handle.HandleHome)
 
-	router.POST("/faq", messageHandler.HandleInsertFaq)
-	router.GET("/faq", messageHandler.HandleFaqs)
-	router.GET("/faq/:id", messageHandler.HandleFaq)
-	router.PUT("/faq/:id", messageHandler.HandleUpdateFaq)
-	router.DELETE("/faq/:id", messageHandler.HandleDeleteFaq)
+	router.POST("/faq", handle.HandleInsertFaq)
+	router.GET("/faq", handle.HandleFaqs)
+	router.GET("/faq/:id", handle.HandleFaq)
+	router.PUT("/faq/:id", handle.HandleUpdateFaq)
+	router.DELETE("/faq/:id", handle.HandleDeleteFaq)
 
-	router.POST("/faq-type", messageHandler.HandleInsertFaqtype)
-	router.GET("/faq-type", messageHandler.HandleFaqtypes)
-	router.GET("/faq-type/:id", messageHandler.HandleFaqtype)
-	router.PUT("/faq-type/:id", messageHandler.HandleUpdateFaqtype)
-	router.DELETE("/faq-type/:id", messageHandler.HandleDeleteFaqtype)
+	router.POST("/faq-type", handle.HandleInsertFaqtype)
+	router.GET("/faq-type", handle.HandleFaqtypes)
+	router.GET("/faq-type/:id", handle.HandleFaqtype)
+	router.PUT("/faq-type/:id", handle.HandleUpdateFaqtype)
+	router.DELETE("/faq-type/:id", handle.HandleDeleteFaqtype)
 
 	router.Run(":8080")
 }

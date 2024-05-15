@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h MessageHandler) HandleHome(c *gin.Context) {
+func HandleHome(c *gin.Context) {
 	r := gintemplrenderer.New(c.Request.Context(), http.StatusOK, home.Hello("This is text"))
 	c.Render(http.StatusOK, r)
 }
