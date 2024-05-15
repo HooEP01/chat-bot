@@ -24,13 +24,15 @@ func main() {
 		panic("(E000) Failed to get env file.")
 	}
 
+	// set up database
 	db.StartDB()
 
 	router := gin.Default()
+
+	// set up templ
 	router.LoadHTMLGlob("views/home/*")
 	ginHtmlRenderer := router.HTMLRender
 	router.HTMLRender = &gintemplrenderer.HTMLTemplRenderer{FallbackHtmlRenderer: ginHtmlRenderer}
-	router.SetTrustedProxies(nil)
 
 	messageHandler := handle.MessageHandler{}
 
