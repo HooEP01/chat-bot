@@ -13,3 +13,6 @@ https://github.com/sashabaranov/go-openai
 Fuzzy search
 <br>
 https://github.com/lithammer/fuzzysearch
+
+> air -c .air.toml
+> templ generate --watch --proxy=http://localhost:8080
