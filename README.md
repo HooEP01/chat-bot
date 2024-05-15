@@ -28,6 +28,10 @@ Fuzzy search:
 https://github.com/lithammer/fuzzysearch
 <br>
 
-
+Air watch
 > air -c .air.toml
+
+<br>
+
+Templ watch
 > templ generate --watch --proxy=http://localhost:8080
